@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { createPost } from '../actions';
+
 class PostsNew extends Component {
   renderField(field) {
-    const { meta: { touched, error } } = field;
+    const { touched, error } = field.meta;
     const className = `form-group ${touched && error ? 'has-danger' : ''}`
     return (
       <div className={className}>
@@ -23,9 +26,10 @@ class PostsNew extends Component {
       </div>
     )
   }
-   onSubmit(values) {
-    console.log(values);
-   }
+  onSubmit(values) {
+    // console.log(values);
+    this.props.createPost(values);
+  }
 
   render() {
     const { handleSubmit } = this.props;
@@ -78,4 +82,7 @@ function validate(values) {
 export default reduxForm({
   validate,
   form: 'PostsNewForm'
-})(PostsNew);
+})(
+  // this is how we stack up multiple connect like
+  connect(null, { createPost })(PostsNew)
+);
