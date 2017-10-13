@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchPost } from '../actions';
+import { fetchPost, deletePost } from '../actions';
 
 class PostsShow extends Component {
   // the instant this component appears on the screen we're going to reach out and fetch the specific post
@@ -11,6 +11,18 @@ class PostsShow extends Component {
     // to get access to the id in the url we can use a prop that is provided to us by react-router
     const { id } = this.props.match.params;
     this.props.fetchPost(id);
+  }
+
+  onDeleteClick() {
+    // we do not yet have an action creator to call, but we will need one
+    // because we are going to make an AJAX request to our backend API to delete
+    // this very particular post
+
+    // action creators are called from this.props
+    const { id } = this.props.match.params;
+    this.props.deletePost(id, () => {
+      this.props.history.push('/');
+    });
   }
 
   render() {
@@ -28,6 +40,12 @@ class PostsShow extends Component {
     return (
       <div>
         <Link to="/" className="btn btn-primary">Back To Index</Link>
+        <button
+          className="btn btn-danger pull-xs-right"
+          onClick={this.onDeleteClick.bind(this)}
+        >
+          Delete Post
+        </button>
         <h3>{ post.title }</h3>
         <h6>Categories: { post.categories }</h6>
         <p>{ post.content }</p>
@@ -49,4 +67,4 @@ function mapStateToProps({ posts }, ownProps) {
   return { post: posts[ownProps.match.params.id] };
 }
 
-export default connect(mapStateToProps, { fetchPost })(PostsShow);
+export default connect(mapStateToProps, { fetchPost, deletePost })(PostsShow);
